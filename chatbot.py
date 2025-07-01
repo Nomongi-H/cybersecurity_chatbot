@@ -1,7 +1,8 @@
+from task_assistant import open_task_assistant
 from voice_greeting import play_greeting
 from ascii import display_logo
-
 from colorama import Fore, Style, init
+
 import time
 import os
 import random
@@ -151,6 +152,12 @@ def main():
     while True:
         user_input = input(Fore.LIGHTGREEN_EX + f"{user_name} 🧑‍💻 > ")
        
+        # Special command to open task assistant
+        if user_input == "task assistant":
+            print(Fore.GREEN + "🔧 Launching your Cybersecurity Task Assistant...")
+            open_task_assistant()
+            continue
+
         if user_input in ["exit", "quit"]:
             slow_print(Fore.YELLOW + f"👋 Thanks for chatting, {user_name}! Stay safe online.")
             break
