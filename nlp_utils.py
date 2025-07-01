@@ -12,8 +12,11 @@ def detect_intent(user_input):
         return "add_task"
     elif "quiz" in input_lower or "play game" in input_lower:
         return "start_quiz"
+    elif "log" in input_lower or "activity log" in input_lower:
+        return "show_activity_log"
     elif "summary" in input_lower or "what have you done" in input_lower:
         return "show_summary"
+    
 
     # Cyber-related topics (for Part 2 conversation)
     elif "password" in input_lower:
