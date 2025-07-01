@@ -6,6 +6,7 @@ from colorama import Fore, Style, init
 from nlp_utils import detect_intent, extract_task_description, extract_reminder_details
 
 import time
+import datetime
 import os
 import random
 
@@ -20,6 +21,8 @@ memory = {
 }
 
 user_actions = []  # Memory for NLP-based task/reminder logging
+activity_log = []  # Store logs of actions performed
+
 
 # Function to simulate a typewriter effect
 def slow_print(text, delay=0.03):
@@ -32,11 +35,21 @@ def slow_print(text, delay=0.03):
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+def log_action(action_description):
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    entry = f"[{timestamp}] {action_description}"
+    activity_log.append(entry)
+    # Limit log to 50 entries
+    if len(activity_log) > 50:
+        activity_log.pop(0)
+
+
 # Ask the user's name
 def greet_user():
     play_greeting()       # Voice greeting
-    display_logo()        # ASCII logo
     clear_screen()        # Clears terminal screen
+    display_logo()        # ASCII logo
+    
 
     print(Fore.CYAN + "=" * 100)
     slow_print(Fore.YELLOW + "🤖 Hello! Welcome to the Cybersecurity Awareness Bot")
@@ -59,7 +72,7 @@ keyword_responses = {
     "password": [
         "🔐 Always use a strong, unique password with letters, numbers, and symbols.",
         "🔑 Don’t reuse passwords! Use a password manager to keep them safe.",
-        "🛡️ Enable two-factor authentication for extra security."
+        "🪪 Enable two-factor authentication for extra security."
     ],
     "scam": [
         "🎣 Watch for urgent messages asking for money or account info.",
@@ -136,6 +149,7 @@ def main():
             if reminder:
                 user_actions.append(f"Reminder set for \"{reminder}\"")
                 slow_print(Fore.MAGENTA + f"📅 Reminder set for \"{reminder}\".")
+                log_action(f"Reminder set: \"{reminder}\"")
             else:
                 slow_print(Fore.RED + "❗ Sorry, I couldn’t understand what to remind you about.")
             continue
@@ -145,6 +159,7 @@ def main():
             if task:
                 user_actions.append(f"Task added: \"{task}\", no reminder set")
                 slow_print(Fore.GREEN + f"📝 Task added: {task}. Would you like to set a reminder for this task?")
+                log_action(f"Task added: \"{task}\", no reminder set")
             else:
                 slow_print(Fore.RED + "❗ I couldn't extract a task description.")
             continue
@@ -161,9 +176,20 @@ def main():
         elif intent == "start_quiz":
             print(Fore.CYAN + "🎮 Launching the Cybersecurity Quiz...")
             start_quiz()
+            log_action("Quiz started")
             continue
 
-        elif user_input in ["exit", "quit"]:
+        elif intent == "show_activity_log":
+            log_action("Viewed activity log")
+            if activity_log:
+                slow_print(Fore.BLUE + "📋 Recent activity log:")
+                for i, entry in enumerate(activity_log[-10:], 1):  # Show last 10 actions
+                    print(Fore.LIGHTBLUE_EX + f"{i}. {entry}")
+            else:
+                slow_print(Fore.YELLOW + "🕵️ No recent activity to show.")
+            continue
+        
+        elif user_input in ["exit"]:
             slow_print(Fore.YELLOW + f"👋 Thanks for chatting, {user_name}! Stay safe online.")
             break
 
@@ -176,6 +202,12 @@ def main():
         time.sleep(1)
         response = generate_response(user_input)
         slow_print(Fore.WHITE + f"{response}")
+        keyword = detect_keywords(user_input)
+        #Keyword was not detected
+        # Added a log action to tack any matches
+        if keyword: 
+            log_action(f"Keyword topic discussed: {keyword}") 
+    
         print(Fore.CYAN + "\n" + "=" * 100)
 
 
