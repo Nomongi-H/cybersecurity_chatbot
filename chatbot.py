@@ -1,3 +1,4 @@
+from quiz_game import start_quiz
 from task_assistant import open_task_assistant
 from voice_greeting import play_greeting
 from ascii import display_logo
@@ -152,23 +153,27 @@ def main():
     while True:
         user_input = input(Fore.LIGHTGREEN_EX + f"{user_name} 🧑‍💻 > ")
        
+        if user_input in ["exit", "quit"]:
+            slow_print(Fore.YELLOW + f"👋 Thanks for chatting, {user_name}! Stay safe online.")
+            break
+
         # Special command to open task assistant
         if user_input == "task assistant":
             print(Fore.GREEN + "🔧 Launching your Cybersecurity Task Assistant...")
             open_task_assistant()
             continue
-
-        if user_input in ["exit", "quit"]:
-            slow_print(Fore.YELLOW + f"👋 Thanks for chatting, {user_name}! Stay safe online.")
-            break
-
-        print(Fore.LIGHTCYAN_EX + "🤖 Bot is typing...\n")
-        time.sleep(1)
-
-        response = generate_response(user_input)
-        slow_print(Fore.WHITE + f"{response}")
-
-        print(Fore.CYAN + "\n" + "=" * 100)
+        
+        if user_input == "cyber quiz":
+            print(Fore.CYAN + "🎮 Launching the Cybersecurity Quiz...")
+        start_quiz()
+        continue
+    
+    print(Fore.LIGHTCYAN_EX + "🤖 Bot is typing...\n")
+    print("DEBUG: Passed exit check")
+    time.sleep(1)
+    response = generate_response(user_input)
+    slow_print(Fore.WHITE + f"{response}")
+    print(Fore.CYAN + "\n" + "=" * 100)
 
 if __name__ == "__main__":
     main()
